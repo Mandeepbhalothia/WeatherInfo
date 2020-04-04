@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">WeatherInfo</string>
+    <string name="current_temp">24\u00B0</string>
+    <string name="degree">\u00B0</string>
+    <string name="today">Today</string>
+    <string name="day">Thu</string>
+    <string name="temp">23\n/\n32</string>
 </resources>

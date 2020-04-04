@@ -4,15 +4,227 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/weather_bg"
     tools:context=".MainActivity">
 
-    <TextView
+    <!--progressBar-->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <!--horizontal guideLine-->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/currentTempHG"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3" />
+
+    <!--vertical guideLine-->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/currentTempRG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <!--today TV-->
+    <TextView
+        android:id="@+id/todayTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/today"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/currentTempTv"
+        app:layout_constraintEnd_toEndOf="@+id/currentTempRG" />
+
+    <!--current temp TV-->
+    <TextView
+        android:id="@+id/currentTempTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_temp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/current_temp_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/currentTempHG"
+        app:layout_constraintEnd_toEndOf="@+id/currentTempRG" />
+
+    <!--cardView for next day prediction-->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bottomCV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@drawable/card_view_bg"
+        android:elevation="4dp"
+        android:minHeight="200dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--card main layout-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp">
+
+            <!--day name-->
+            <TextView
+                android:id="@+id/day2Tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/day"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/day3Tv"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--temp value-->
+            <TextView
+                android:id="@+id/day2TempTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:background="@drawable/blue_border_bg"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/temp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                app:layout_constraintEnd_toEndOf="@id/day2Tv"
+                app:layout_constraintStart_toStartOf="@id/day2Tv"
+                app:layout_constraintTop_toBottomOf="@id/day2Tv" />
+            <!--day name-->
+            <TextView
+                android:id="@+id/day3Tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/day"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/day4Tv"
+                app:layout_constraintStart_toEndOf="@+id/day2Tv"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--temp value-->
+            <TextView
+                android:id="@+id/day3TempTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:background="@drawable/blue_border_bg"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/temp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                app:layout_constraintEnd_toEndOf="@id/day3Tv"
+                app:layout_constraintStart_toStartOf="@id/day3Tv"
+                app:layout_constraintTop_toBottomOf="@id/day3Tv" />
+            <!--day name-->
+            <TextView
+                android:id="@+id/day4Tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/day"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/day5Tv"
+                app:layout_constraintStart_toEndOf="@+id/day3Tv"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--temp value-->
+            <TextView
+                android:id="@+id/day4TempTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:background="@drawable/blue_border_bg"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/temp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                app:layout_constraintEnd_toEndOf="@id/day4Tv"
+                app:layout_constraintStart_toStartOf="@id/day4Tv"
+                app:layout_constraintTop_toBottomOf="@id/day4Tv" />
+            <!--day name-->
+            <TextView
+                android:id="@+id/day5Tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/day"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/day6Tv"
+                app:layout_constraintStart_toEndOf="@+id/day4Tv"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--temp value-->
+            <TextView
+                android:id="@+id/day5TempTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:background="@drawable/blue_border_bg"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/temp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                app:layout_constraintEnd_toEndOf="@id/day5Tv"
+                app:layout_constraintStart_toStartOf="@id/day5Tv"
+                app:layout_constraintTop_toBottomOf="@id/day5Tv" />
+            <!--day name-->
+            <TextView
+                android:id="@+id/day6Tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/day"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/day5Tv"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--temp value-->
+            <TextView
+                android:id="@+id/day6TempTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:background="@drawable/blue_border_bg"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/temp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/normal_text_size"
+                app:layout_constraintEnd_toEndOf="@id/day6Tv"
+                app:layout_constraintStart_toStartOf="@id/day6Tv"
+                app:layout_constraintTop_toBottomOf="@id/day6Tv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

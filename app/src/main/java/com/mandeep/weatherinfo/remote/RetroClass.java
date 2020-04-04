@@ -11,6 +11,7 @@ import com.mandeep.weatherinfo.model.WeatherRequiredData;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -53,8 +54,8 @@ public class RetroClass {
         return getInstance().create(WeatherApiService.class);
     }
 
-    public MutableLiveData<WeatherRequiredData> getWeatherLiveData(String lat, String lng){
-        final MutableLiveData<WeatherRequiredData> mutableLiveData = new MutableLiveData<>();
+    public MutableLiveData<ArrayList<WeatherRequiredData>> getWeatherLiveData(String lat, String lng) {
+        final MutableLiveData<ArrayList<WeatherRequiredData>> mutableLiveData = new MutableLiveData<>();
         WeatherApiService apiService = getWeatherApiService();
         apiService.getWeatherByLatLng(lat, lng, APP_ID, TEMP_UNIT).clone().enqueue(
                 new Callback<ApiResult>() {
@@ -66,20 +67,30 @@ public class RetroClass {
                                 ApiResult apiResult = response.body();
                                 // list of data
                                 List<WeatherList> weatherList = apiResult.getList();
-                                // init weatherRequiredData class to store extracted data
-                                WeatherRequiredData weatherRequiredData = new WeatherRequiredData();
+                                // init arrayList to store all days data
+                                ArrayList<WeatherRequiredData> weatherDataList = new ArrayList<>();
+                                // arrayList to check weather data of particular date is stored or not
+                                ArrayList<String> dateList = new ArrayList<>();
+                                WeatherRequiredData weatherRequiredData;
                                 //list contains many items, iterate them
                                 for (WeatherList list : weatherList) {
+                                    // init weatherRequiredData class to store extracted data
+                                    weatherRequiredData = new WeatherRequiredData();
+
                                     WeatherMain weatherMain = list.getMain();// get model main from list
-                                    weatherRequiredData.setDate(list.getDt_txt()); // get date
+                                    String date = list.getDt_txt().split("\\s")[0];// get date only
+                                    weatherRequiredData.setDate(date);
                                     weatherRequiredData.setCurrentTemp(weatherMain.getTemp());// get current temp
                                     weatherRequiredData.setMaxTemp(weatherMain.getTemp_max());// get max temp
                                     weatherRequiredData.setMinTemp(weatherMain.getTemp_min());// get min temp
+                                    if (!dateList.contains(date)) { // save data if date is changed
+                                        weatherDataList.add(weatherRequiredData);
+                                        dateList.add(date);
+                                    }
                                 }
-                                mutableLiveData.setValue(weatherRequiredData);
+                                dateList.clear();
+                                mutableLiveData.setValue(weatherDataList);
                             }
-                        } else {
-                            int errorCode = response.code();
                         }
                     }
 
