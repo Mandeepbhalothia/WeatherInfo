@@ -5,4 +5,5 @@
     <string name="today">Today</string>
     <string name="day">Thu</string>
     <string name="temp">23\n/\n32</string>
+    <string name="try_again">Try Again</string>
 </resources>

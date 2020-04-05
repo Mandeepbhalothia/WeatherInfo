@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,12 +16,22 @@ import android.widget.Toast;
 public class Common {
     public static final String APP_ID = "cb874bfb5b0229ecef2117d76bfa2d8e";
     public static final String TEMP_UNIT = "metric";
+    private Location location = null;
+
+    public boolean isInternetAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = null;
+        if (connectivityManager != null) {
+            activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        }
+        return activeNetworkInfo != null;
+    }
 
     public Location getCurrentLoc(Context context) {
-        Location location = null;
+        LocationManager locationManager = (LocationManager) context
+                .getSystemService(Context.LOCATION_SERVICE);
         try {
-            LocationManager locationManager = (LocationManager) context
-                    .getSystemService(Context.LOCATION_SERVICE);
 
             // check locationManager
             if (locationManager == null) {
@@ -52,51 +64,59 @@ public class Common {
                         return null;
                     }
                 }
-                if (isNetworkEnabled) {
-
-                    location = locationManager
-                            .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-                }
                 // if GPS Enabled get lat/long using GPS Services
+                String SELECTED_PROVIDER;
                 if (isGPSEnabled) {
-                    final Location[] locationGps = {locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER)};
+                    SELECTED_PROVIDER = LocationManager.GPS_PROVIDER;
+                    Location locationGps = locationManager.getLastKnownLocation(SELECTED_PROVIDER);
 
-                    // request location update by gps provider
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER
-                            , 1000, 0, new LocationListener() {
-                                @Override
-                                public void onLocationChanged(Location location) {
-                                    if (location != null)
-                                        locationGps[0] = location;
-                                }
-
-                                @Override
-                                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                                }
-
-                                @Override
-                                public void onProviderEnabled(String provider) {
-
-                                }
-
-                                @Override
-                                public void onProviderDisabled(String provider) {
-
-                                }
-                            });
-
-                    if (locationGps[0] != null) {
-                        location = locationGps[0];
+                    if (locationGps != null) {
+                        location = locationGps;
+                    } else {
+                        // request location update by gps provider
+                        locationManager.requestLocationUpdates(SELECTED_PROVIDER
+                                , 1000, 0, locationListener);
                     }
+                } else {
+//                    Toast.makeText(context, "GPS is off, Location is provided by Network", Toast.LENGTH_SHORT).show();
+                    SELECTED_PROVIDER = LocationManager.NETWORK_PROVIDER;
+                    location = locationManager.getLastKnownLocation(SELECTED_PROVIDER);
+                    if (location == null) {
+                        // request location update by network provider
+                        locationManager.requestLocationUpdates(SELECTED_PROVIDER
+                                , 1000, 0, locationListener);
+                    }
+
                 }
             }
         } catch (Exception e) {
             Log.e(context.getClass().getSimpleName(), "getCurrentLoc: " + e.toString());
         }
-
+        if (locationManager != null)
+            locationManager.removeUpdates(locationListener);
         return location;
     }
+
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location locationChanged) {
+            location = locationChanged;
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,11 +26,11 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
     private CardView bottomCv;
     private TextView currentTempTv, day2Tv, day2TempTv, day3Tv, day3TempTv,
             day4Tv, day4TempTv, day5Tv, day5TempTv, day6Tv, day6TempTv;
     private ProgressBar progressbar;
+    private Button refreshButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +39,26 @@ public class MainActivity extends AppCompatActivity {
 
         initUi();
 
-        // get current loc 
-        Location currentLoc = getCurrentLoc();
+        fetchData();
+    }
 
-        if (currentLoc != null) {
-            getWeatherData(currentLoc);
+    private void fetchData() {
+        // check internet connection
+        if (new Common().isInternetAvailable(this)) {
+            // get current loc
+            Location currentLoc = getCurrentLoc();
+
+            if (currentLoc != null) {
+                // all condition satisfied hide refresh button
+                refreshButton.setVisibility(View.GONE);
+                getWeatherData(currentLoc);
+            } else {
+                refreshButton.setVisibility(View.VISIBLE);
+                Toast.makeText(this, "Current Location is not available", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            refreshButton.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Internet not available", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -60,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         day4TempTv = findViewById(R.id.day4TempTv);
         day5TempTv = findViewById(R.id.day5TempTv);
         day6TempTv = findViewById(R.id.day6TempTv);
+        refreshButton = findViewById(R.id.refreshBtn);
         // set background to bottomCv
         bottomCv.setBackgroundResource(R.drawable.card_view_bg);
     }
@@ -120,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         String mergedTemp = minTemp + "\n/\n" + maxTemp;
         switch (pos) {
             case 1:
-                String currentTemp = weatherRequiredData.getCurrentTemp()+getResources().getString(R.string.degree);
+                String currentTemp = weatherRequiredData.getCurrentTemp() + getResources().getString(R.string.degree);
                 currentTempTv.setText(currentTemp);
                 break;
             case 2:
@@ -159,5 +176,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void hideProgress() {
         progressbar.setVisibility(View.GONE);
+    }
+
+    public void refreshData(View view) {
+        // fetch data again
+        fetchData();
     }
 }
